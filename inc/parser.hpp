@@ -3,10 +3,12 @@
 
 #include <string>
 #include <vector>
-#include <unicode> 
+#include <iostream> 
+#include <memory>
 
 #include "ast_node.hpp"
 
+namespace fg {
 class Parser {
 public:
     explicit Parser(std::string const& a_script_code);
@@ -22,6 +24,7 @@ private:
     std::unique_ptr<WhileNode> parse_while();
     std::unique_ptr<AssignmentNode> parse_assignment();
     std::unique_ptr<ArithmeticNode> parse_arithmetic();
+    std::unique_ptr<PrintNode> parse_print();
 
     std::string get_command_from_script();
 
@@ -29,5 +32,5 @@ private:
     const std::string m_script_code;
     std::size_t m_pos;
 };
-
+} // namespace fg
 #endif // PARSER_HPP

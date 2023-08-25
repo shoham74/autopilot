@@ -6,7 +6,9 @@
 #include <vector>
 #include <unordered_map>
 #include "parser.hpp"
+#include "ast_node.hpp"
 #include "blocking_map.hpp"
+#include "var.hpp"
 
 namespace fg {
 class Interpreter {
