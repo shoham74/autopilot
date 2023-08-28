@@ -12,50 +12,119 @@ BEGIN_TEST(var_int_test)
 
     for (Token const& token : tokens) {
         std::string tokenType;
-        if (token.type == TokenType::IDENTIFIER) {
+        if (token.m_type == TokenType::IDENTIFIER) {
             tokenType = "IDENTIFIER";
-        } else if (token.type == TokenType::NUMBER) {
+        } else if (token.m_type == TokenType::NUMBER) {
             tokenType = "NUMBER";
-        } else if (token.type == TokenType::SYMBOL) {
+        } else if (token.m_type == TokenType::SYMBOL) {
             tokenType = "SYMBOL";
         }
 
-        std::cout << "Token Type: " << tokenType << ", Value: " << token.value << std::endl;
+        std::cout << "Token Type: " << tokenType << ", Value: " << token.m_value << std::endl;
     }
     ASSERT_PASS();
 END_TEST
 
 BEGIN_TEST(script_test)
     Lexer lexer;
-    std::string sourceCode = "sleep 1000 magnetos = 3 throttle = 0.2 \
-    mixture = 0.949 masterbat = 1 masterlat = 1 \
-    masteravionics = 1 brakeparking = 0 primer = 3 starter = 1 autostart = 1\
-    print rpm rpm = 800 sleep 250 while rpm < 750 { print rpm sleep 250}\
-    var h0 = heading\
-    breaks = 0\
-    sleep 10000\
-    throttle = 1 while alt < 1500 {\
-    rudder = (h0 - heading)/20\
-    aileron = - roll / 70\
-    elevator = pitch/50\
-    print alt\
-    sleep 250\
-}"; 
+
+    std::string sourceCode = " while rpm < 750 { print rpm sleep 250 }";
 
     std::vector<Token> tokens = lexer.tokenize(sourceCode);
 
-    for (Token const& token : tokens) {
-        std::string tokenType;
-        if (token.type == TokenType::IDENTIFIER) {
-            tokenType = "IDENTIFIER";
-        } else if (token.type == TokenType::NUMBER) {
-            tokenType = "NUMBER";
-        } else if (token.type == TokenType::SYMBOL) {
-            tokenType = "SYMBOL";
-        }
+   for (Token const& token : tokens) {
+    std::string tokenType;
 
-        std::cout << "Token Type: " << tokenType << ", Value: " << token.value << std::endl;
+    switch (token.m_type) {
+        case TokenType::VAR:
+            tokenType = "VAR";
+            break;
+        case TokenType::BIND:
+            tokenType = "BIND";
+            break;
+        case TokenType::IF:
+            tokenType = "IF";
+            break;
+        case TokenType::ELSE:
+            tokenType = "ELSE";
+            break;
+        case TokenType::WHILE:
+            tokenType = "WHILE";
+            break;
+        case TokenType::IDENTIFIER:
+            tokenType = "IDENTIFIER";
+            break;
+        case TokenType::NUMBER:
+            tokenType = "NUMBER";
+            break;
+        case TokenType::STRING_LITERAL:
+            tokenType = "STRING_LITERAL";
+            break;
+        case TokenType::ASSIGNMENT:
+            tokenType = "ASSIGNMENT";
+            break;
+        case TokenType::PLUS:
+            tokenType = "PLUS";
+            break;
+        case TokenType::MINUS:
+            tokenType = "MINUS";
+            break;
+        case TokenType::ASTERISK:
+            tokenType = "ASTERISK";
+            break;
+        case TokenType::SLASH:
+            tokenType = "SLASH";
+            break;
+        case TokenType::OPEN_PAREN:
+            tokenType = "OPEN_PAREN";
+            break;
+        case TokenType::CLOSE_PAREN:
+            tokenType = "CLOSE_PAREN";
+            break;
+        case TokenType::OPEN_SCOP:
+            tokenType = "OPEN_SCOP";
+            break;
+        case TokenType::CLOSE_SCOP:
+            tokenType = "CLOSE_SCOP";
+            break;
+        case TokenType::COLON:
+            tokenType = "COLON";
+            break;
+        case TokenType::COMMA:
+            tokenType = "COMMA";
+            break;
+        case TokenType::SEMICOLON:
+            tokenType = "SEMICOLON";
+            break;
+         case TokenType::SYMBOL:
+            tokenType = "SYMBOL";
+            break;
+         case TokenType::PRINT:
+            tokenType = "PRINT";
+            break;
+         case TokenType::SLEEP:
+            tokenType = "SLEEP";
+            break;
+        case TokenType::LESS_EQUAL:
+            tokenType = "LESS_EQUAL";
+            break;
+        case TokenType::GREATER:
+            tokenType = "LESS_EQUAL";
+            break;
+        case TokenType::GREATER_EQUAL:
+            tokenType = "LESS_EQUAL";
+            break;
+        case TokenType::NOT_EQUAL:
+            tokenType = "LESS_EQUAL";
+            break;
+        case TokenType::LESS:
+            tokenType = "LESS";
+            break;
     }
+
+    std::cout << "Token Type: " << tokenType << ", Value: " << token.m_value << std::endl;
+}
+
     ASSERT_PASS();
 END_TEST
 

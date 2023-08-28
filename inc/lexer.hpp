@@ -6,17 +6,41 @@
 #include <vector>
 #include <boost/tokenizer.hpp>
 
-// Define token types
 enum class TokenType {
+    VAR,
+    BIND,
+    IF,
+    ELSE,
+    WHILE,
     IDENTIFIER,
     NUMBER,
-    SYMBOL
+    STRING_LITERAL,
+    ASSIGNMENT,
+    PLUS,
+    MINUS,
+    ASTERISK,
+    SLASH,
+    OPEN_PAREN,
+    CLOSE_PAREN,
+    OPEN_SCOP,
+    CLOSE_SCOP,
+    COLON,
+    COMMA,
+    SEMICOLON,
+    SLEEP,
+    PRINT,
+    SYMBOL,
+    GREATER_EQUAL,
+    GREATER,
+    LESS_EQUAL,
+    LESS,
+    NOT_EQUAL
 };
 
 // Token structure
 struct Token {
-    TokenType type;
-    std::string value;
+    TokenType m_type;
+    std::string m_value;
 };
 
 class Lexer {
