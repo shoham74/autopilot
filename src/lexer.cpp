@@ -4,7 +4,7 @@ namespace {
 
 TokenType get_token_type(std::string const& token_str) 
 {
-    // Keywords
+    // keywords
     switch (token_str[0]) {
         case 'v':
             if (token_str == "var") return TokenType::VAR;
@@ -29,7 +29,7 @@ TokenType get_token_type(std::string const& token_str)
             break;
     }
 
-    // Symbols
+    // symbols
     switch (token_str[0]) {
         case '=':
             return TokenType::ASSIGNMENT;
@@ -66,7 +66,7 @@ TokenType get_token_type(std::string const& token_str)
         break;
 }
 
-    // Identifier recognition
+    // identifier 
     if (std::isalpha(token_str[0]) || token_str[0] == '_') {
         bool is_identifier = true;
         for (char c : token_str.substr(1)) {
@@ -78,7 +78,7 @@ TokenType get_token_type(std::string const& token_str)
         if (is_identifier) return TokenType::IDENTIFIER;
     }
 
-    // Number recognition (simplified for positive integers)
+    // number 
     bool is_number = true;
     for (char c : token_str) {
         if (!std::isdigit(c)) {
@@ -88,11 +88,12 @@ TokenType get_token_type(std::string const& token_str)
     }
     if (is_number) return TokenType::NUMBER;
 
-    // String literal recognition (simplified for single-quoted strings)
-    if (token_str.size() >= 2 && token_str.front() == '\'' && token_str.back() == '\'')
+    // string literal 
+    if ((token_str.size() >= 2 && token_str.front() == '"' && token_str.back() == '"') ||
+        (token_str.size() >= 2 && token_str.front() == '\'' && token_str.back() == '\'')) {
         return TokenType::STRING_LITERAL;
+    }
 
-    // Default to IDENTIFIER for unhandled cases
     return TokenType::IDENTIFIER;
 }
 }
