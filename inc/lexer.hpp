@@ -45,7 +45,7 @@ struct Token {
 
 class Lexer {
 public:
-    Lexer();
+    Lexer() = default;
     std::vector<Token> tokenize(std::string const& a_code) const;
 };
 

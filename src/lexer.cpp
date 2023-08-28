@@ -1,41 +1,36 @@
 #include "lexer.hpp"
 
-Lexer::Lexer() 
-{
-
-}
-
 namespace {
 
-TokenType get_token_type(std::string const& tokenStr) 
+TokenType get_token_type(std::string const& token_str) 
 {
     // Keywords
-    switch (tokenStr[0]) {
+    switch (token_str[0]) {
         case 'v':
-            if (tokenStr == "var") return TokenType::VAR;
+            if (token_str == "var") return TokenType::VAR;
             break;
         case 'b':
-            if (tokenStr == "bind") return TokenType::BIND;
+            if (token_str == "bind") return TokenType::BIND;
             break;
         case 'i':
-            if (tokenStr == "if") return TokenType::IF;
+            if (token_str == "if") return TokenType::IF;
             break;
         case 'e':
-            if (tokenStr == "else") return TokenType::ELSE;
+            if (token_str == "else") return TokenType::ELSE;
             break;
         case 'w':
-            if (tokenStr == "while") return TokenType::WHILE;
+            if (token_str == "while") return TokenType::WHILE;
             break;
         case 'p':
-            if (tokenStr == "print") return TokenType::PRINT;
+            if (token_str == "print") return TokenType::PRINT;
             break;
         case 's':
-            if (tokenStr == "sleep") return TokenType::SLEEP;
+            if (token_str == "sleep") return TokenType::SLEEP;
             break;
     }
 
     // Symbols
-    switch (tokenStr[0]) {
+    switch (token_str[0]) {
         case '=':
             return TokenType::ASSIGNMENT;
         case '+':
@@ -61,40 +56,40 @@ TokenType get_token_type(std::string const& tokenStr)
         case ';':
             return TokenType::SEMICOLON;
         case '>':
-            if (tokenStr == ">=") return TokenType::GREATER_EQUAL;
+            if (token_str == ">=") return TokenType::GREATER_EQUAL;
             return TokenType::GREATER;
         case '<':
-            if (tokenStr == "<=") return TokenType::LESS_EQUAL;
+            if (token_str == "<=") return TokenType::LESS_EQUAL;
             return TokenType::LESS;
         case '!':
-        if (tokenStr == "!=") return TokenType::NOT_EQUAL;
+        if (token_str == "!=") return TokenType::NOT_EQUAL;
         break;
 }
 
     // Identifier recognition
-    if (std::isalpha(tokenStr[0]) || tokenStr[0] == '_') {
-        bool isIdentifier = true;
-        for (char c : tokenStr.substr(1)) {
+    if (std::isalpha(token_str[0]) || token_str[0] == '_') {
+        bool is_identifier = true;
+        for (char c : token_str.substr(1)) {
             if (!std::isalnum(c) && c != '_') {
-                isIdentifier = false;
+                is_identifier = false;
                 break;
             }
         }
-        if (isIdentifier) return TokenType::IDENTIFIER;
+        if (is_identifier) return TokenType::IDENTIFIER;
     }
 
     // Number recognition (simplified for positive integers)
-    bool isNumber = true;
-    for (char c : tokenStr) {
+    bool is_number = true;
+    for (char c : token_str) {
         if (!std::isdigit(c)) {
-            isNumber = false;
+            is_number = false;
             break;
         }
     }
-    if (isNumber) return TokenType::NUMBER;
+    if (is_number) return TokenType::NUMBER;
 
     // String literal recognition (simplified for single-quoted strings)
-    if (tokenStr.size() >= 2 && tokenStr.front() == '\'' && tokenStr.back() == '\'')
+    if (token_str.size() >= 2 && token_str.front() == '\'' && token_str.back() == '\'')
         return TokenType::STRING_LITERAL;
 
     // Default to IDENTIFIER for unhandled cases
@@ -108,10 +103,10 @@ std::vector<Token> Lexer::tokenize(std::string const& sourceCode) const {
     boost::char_separator<char> separator(" \t\r\n");
     boost::tokenizer<boost::char_separator<char>> tokenizer(sourceCode, separator);
 
-    for (const std::string& tokenStr : tokenizer) {
+    for (const std::string& token_str : tokenizer) {
         Token token;
-        token.m_type = get_token_type(tokenStr);
-        token.m_value = tokenStr;
+        token.m_type = get_token_type(token_str);
+        token.m_value = token_str;
         tokens.push_back(token);
     }
 
