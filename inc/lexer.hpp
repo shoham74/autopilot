@@ -16,6 +16,8 @@ enum class TokenType {
     NUMBER,
     STRING_LITERAL,
     ASSIGNMENT,
+    CONNECT,
+    TELEMETRY,
     PLUS,
     MINUS,
     ASTERISK,

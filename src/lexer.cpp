@@ -27,6 +27,13 @@ TokenType get_token_type(std::string const& token_str)
         case 's':
             if (token_str == "sleep") return TokenType::SLEEP;
             break;
+        case 'c':
+            if (token_str == "connect") return TokenType::CONNECT;
+            break;
+        case 't':
+            if (token_str == "telemetry") return TokenType::TELEMETRY;
+            break;
+
     }
 
     // symbols

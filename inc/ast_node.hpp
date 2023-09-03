@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 
+
 class ASTNode {
 public:
     virtual ~ASTNode() = default;
@@ -16,7 +17,16 @@ VariableNode(std::string const& a_name, std::string const& a_property)
 : m_name(a_name)
 , m_property(a_property) 
 {
+
 }
+
+std::string name() const {
+        return m_name;
+    }
+
+std::string property() const {
+        return m_property;
+    }
 
 private:
     std::string m_name;
@@ -25,39 +35,37 @@ private:
 
 class BindNode : public ASTNode {
 public:
-    BindNode(const std::string& property)
-        : property(property) {}
+BindNode(std::string const& a_name, std::string const& a_property)
+: m_name(a_name)
+, m_property(a_property) 
+{
+
+}
+
+std::string name() const {
+        return m_name;
+    }
+
+std::string property() const {
+        return m_property;
+    }
 
 private:
-    std::string property;
+    std::string m_name;
+    std::string m_property;
 };
 
 class PrintNode : public ASTNode {
 public:
-    explicit PrintNode(const std::string& text)
-        : text(text) {}
+explicit PrintNode(const std::string& text)
+        : m_text(text) {}
+
+std::string text() const {
+        return m_text;
+    }
 
 private:
-    std::string text;
-};
-
-
-class ForNode : public ASTNode {
-public:
-    ForNode(std::unique_ptr<ASTNode> init,
-            std::unique_ptr<ASTNode> cond,
-            std::unique_ptr<ASTNode> update,
-            std::vector<std::unique_ptr<ASTNode>> body)
-        : initialization(std::move(init)),
-          condition(std::move(cond)),
-          update(std::move(update)),
-          loop_body(std::move(body)) {}
-
-private:
-    std::unique_ptr<ASTNode> initialization;
-    std::unique_ptr<ASTNode> condition;
-    std::unique_ptr<ASTNode> update;
-    std::vector<std::unique_ptr<ASTNode>> loop_body;
+    std::string m_text;
 };
 
 class IfNode : public ASTNode {
@@ -95,6 +103,45 @@ public:
 private:
     std::string identifier;
     std::unique_ptr<ASTNode> expression;
+};
+
+
+
+
+class ConditionNode : public ASTNode {
+public:
+    ConditionNode(std::string const& id , std::string const& num , std::string const& symbol)
+        : m_condition(symbol) , m_number(num) , m_idtfr(id)
+        {
+
+        }
+
+private:
+    std::string m_condition;
+    std::string m_number; 
+    std::string m_idtfr; 
+
+};
+
+
+
+
+
+
+class SleepNode : public ASTNode {
+public:
+SleepNode(std::string const& a_time)
+: m_time(a_time) 
+{ 
+}
+
+int time() const
+{
+    return std::stoi(m_time);
+}
+
+private:
+    std::string m_time;
 };
 
 class ArithmeticNode : public ASTNode {
