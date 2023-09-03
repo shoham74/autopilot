@@ -87,10 +87,15 @@ TokenType get_token_type(std::string const& token_str)
 
     // number 
     bool is_number = true;
+    bool has_decimal_point = false;
     for (char c : token_str) {
-        if (!std::isdigit(c)) {
+    if (!std::isdigit(c)) {
+        if (c == '.' && !has_decimal_point) {
+            has_decimal_point = true;
+        } else {
             is_number = false;
             break;
+          }
         }
     }
     if (is_number) return TokenType::NUMBER;

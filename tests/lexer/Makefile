@@ -7,12 +7,12 @@ CPPFLAGS = -DDEBUG -I$(INCLUDES_DIR) -I$(SOURCES_DIR)
 INCLUDES_DIR = ../../inc
 SOURCES_DIR = ../../src
 
-LDFLAGS= -I/usr/local/include/Poco
+LDFLAGS= -I/usr/local/include/Poco 
 
-OBJS = utest.o $(SOURCES_DIR)/lexer.o $(SOURCES_DIR)/parser.o $(SOURCES_DIR)/auto_parser.o
+OBJS = utest.o $(SOURCES_DIR)/lexer.o $(SOURCES_DIR)/parser.o
 TARGET = utest
 
-LDLIBS = -lpthread 
+LDLIBS = -lpthread -lpthread -lboost_system -lboost_thread
 
 all: $(TARGET)
 
@@ -37,7 +37,6 @@ $(SOURCES_DIR)/lexer.o: $(INCLUDES_DIR)/lexer.hpp
 
 $(SOURCES_DIR)/parser.o: $(INCLUDES_DIR)/parser.hpp $(INCLUDES_DIR)/ast_node.hpp
 
-$(SOURCES_DIR)/auto_parser.o: $(INCLUDES_DIR)/auto_parser.hpp 
 
 
 
