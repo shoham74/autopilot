@@ -40,7 +40,12 @@ std::unique_ptr<ASTNode> Parser::parse_statement(std::vector<Token> const& a_tok
         } else if(current_token.m_type == TokenType::WHILE) {
             m_pos++; 
             return parse_while(a_tokens);
+
+        } else if(current_token.m_type == TokenType::IF) {
+            m_pos++; 
+            return parse_if(a_tokens);
         }
+
 
 
         //TODO handle other types of statements here
@@ -152,30 +157,130 @@ std::unique_ptr<WhileNode> Parser::parse_while(std::vector<Token> const& a_token
     return nullptr;
 }
 
-// std::unique_ptr<BindNode> Parser::parse_bind() 
-// {
-//     if (get_command_from_script() != "bind ") {
-//         return nullptr;
-//     }
+std::unique_ptr<ArithmeticNode> Parser::parse_arithmetic(std::vector<Token> const& a_tokens)
+{
+    if (m_pos < a_tokens.size() && a_tokens[m_pos].m_type == TokenType::NUMBER) {
+        Token current_token = a_tokens[m_pos];
+        m_pos++;
+        
+        std::unique_ptr<ArithmeticNode> arithmetic_node = std::make_unique<ArithmeticNode>(current_token.m_value);
 
-//     if (get_command_from_script() != "(") {
-//         return nullptr;
-//     }
+        while (m_pos < a_tokens.size() && ((a_tokens[m_pos].m_type == TokenType::PLUS) 
+        || (a_tokens[m_pos].m_type == TokenType::MINUS) 
+        || (a_tokens[m_pos].m_type == TokenType::SLASH)
+        || (a_tokens[m_pos].m_type == TokenType::ASTERISK) )) {
+            m_pos++;
+            if (m_pos < a_tokens.size() && a_tokens[m_pos].m_type == TokenType::NUMBER) {
+                current_token = a_tokens[m_pos];
+                m_pos++;
 
-//     std::string property = get_command_from_script();
-//     if (property.empty() || property.front() != '\'' || property.back() != '\'') {
-//        throw("somethis go wrong");
-//         return nullptr;
-//     }
+                // arithmetic_node = std::make_unique<ConditionNode>(
+                //     std::move(arithmetic_node),
+                //     std::make_unique<ArithmeticNode>(current_token.m_value)
+                // );
+            } else {
 
-//     if (get_command_from_script() != ")") {
-//         throw("somethis go wrong");
-//         return nullptr;
-//     }
+                return nullptr;
+            }
+        }
+        return arithmetic_node;
+    }
 
-//     return std::make_unique<BindNode>(property.substr(1, property.length() - 2));
-// }
+    return nullptr;
+}
 
+std::unique_ptr<BindNode> Parser::parse_bind(std::vector<Token> const& a_tokens)
+{
+    if (m_pos < a_tokens.size() && a_tokens[m_pos].m_type == TokenType::BIND) {
+        m_pos++;
+
+        if (m_pos < a_tokens.size() && a_tokens[m_pos].m_type == TokenType::OPEN_PAREN) {
+            m_pos++;
+
+            if (m_pos < a_tokens.size() && a_tokens[m_pos].m_type == TokenType::STRING_LITERAL) {
+                std::string property = a_tokens[m_pos].m_value;
+                m_pos++;
+
+                if (m_pos < a_tokens.size() && a_tokens[m_pos].m_type == TokenType::COMMA) {
+                    m_pos++;
+
+                    if (m_pos < a_tokens.size() && a_tokens[m_pos].m_type == TokenType::IDENTIFIER) {
+                        std::string variable = a_tokens[m_pos].m_value;
+                        m_pos++;
+
+                        if (m_pos < a_tokens.size() && a_tokens[m_pos].m_type == TokenType::CLOSE_PAREN) {
+                            m_pos++;
+
+                            return std::make_unique<BindNode>(property, variable);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return nullptr;
+}
+
+std::unique_ptr<IfNode> Parser::parse_if(std::vector<Token> const& a_tokens)
+{
+    if (m_pos < a_tokens.size() && a_tokens[m_pos].m_type == TokenType::IF) {
+        m_pos++;
+
+        std::unique_ptr<ArithmeticNode> condition = parse_arithmetic(a_tokens);
+
+        if (condition) {
+            if (m_pos < a_tokens.size() && a_tokens[m_pos].m_type == TokenType::COLON) {
+                m_pos++;
+
+                std::vector<std::unique_ptr<ASTNode>> if_body;
+                while (m_pos < a_tokens.size() && a_tokens[m_pos].m_type != TokenType::ELSE && a_tokens[m_pos].m_type != TokenType::SYMBOL) {
+                    std::unique_ptr<ASTNode> statement = parse_statement(a_tokens);
+                    if (statement) {
+                        if_body.push_back(std::move(statement));
+                    } else {
+
+                        return nullptr;
+                    }
+                }
+
+                std::vector<std::unique_ptr<ASTNode>> else_body;
+                if (m_pos < a_tokens.size() && a_tokens[m_pos].m_type == TokenType::ELSE) {
+                    m_pos++;
+
+                    if (m_pos < a_tokens.size() && a_tokens[m_pos].m_type == TokenType::COLON) {
+                        m_pos++;
+
+                        while (m_pos < a_tokens.size() && a_tokens[m_pos].m_type != TokenType::SYMBOL) {
+                            std::unique_ptr<ASTNode> statement = parse_statement(a_tokens);
+                            if (statement) {
+                                else_body.push_back(std::move(statement));
+                            } else {
+                                return nullptr;
+                            }
+                        }
+                    } else {
+                        return nullptr;
+                    }
+                }
+
+                if (m_pos < a_tokens.size() && a_tokens[m_pos].m_type == TokenType::SYMBOL) {
+                    m_pos++;
+
+                    return std::make_unique<IfNode>(std::move(condition), std::move(if_body), std::move(else_body));
+                } else {
+                    return nullptr;
+                }
+            } else {
+                return nullptr;
+            }
+        }
+    }
+
+    return nullptr;
+}
+
+}// namespace fg
 
 // std::unique_ptr<AssignmentNode> Parser::parse_assignment() 
 // {
@@ -194,75 +299,4 @@ std::unique_ptr<WhileNode> Parser::parse_while(std::vector<Token> const& a_token
 // }
 
 
-// std::unique_ptr<IfNode> Parser::parse_if() 
-// {
-//     // // Parse condition
-//     // auto condition = parse_arithmetic();
-//     // if (!condition) {
-//     //     // Handle error: Invalid condition
-//     //     return nullptr;
-//     // }
 
-//     // if (get_command_from_script() != ":") {
-//     //     // Handle error: Expected ':'
-//     //     return nullptr;
-//     // }
-
-//     // std::vector<std::unique_ptr<ASTNode>> if_body;
-//     // // Parse and populate if_body using a loop
-//     // while (...) {
-//     //     auto statement = parse_statement();
-//     //     if (statement) {
-//     //         if_body.push_back(std::move(statement));
-//     //     } else {
-//     //         // Handle error
-//     //     }
-//     // }
-
-//     // std::vector<std::unique_ptr<ASTNode>> else_body;
-//     // if (get_command_from_script() == "else") {
-//     //     // Parse else body in a similar manner
-//     //     // ...
-
-//     //     // Parse 'end'
-//     //     if (get_command_from_script() != "end") {
-//     //         // Handle error: Expected 'end' after if-else
-//     //         return nullptr;
-//     //     }
-//     // } else {
-//     //     // Parse 'end'
-//     //     if (get_command_from_script() != "end") {
-//     //         // Handle error: Expected 'end' after if
-//            return nullptr;
-//     //     }
-//     //}
-
-//     //return std::make_unique<IfNode>(std::move(condition), std::move(if_body), std::move(else_body));
-// }
-
-// std::unique_ptr<ArithmeticNode> Parser::parse_arithmetic() 
-// {
-//     // std::unique_ptr<ASTNode> left_operand = parse_primary();
-//     // if (!left_operand) {
-//     //     // Handle error: Invalid left operand
-//     //     return nullptr;
-//     // }
-
-//     // std::string op = get_command_from_script();
-//     // if (op != "+" && op != "-" && op != "*" && op != "/") {
-//     //     // Not an arithmetic operator
-//     //     return nullptr;
-//     // }
-
-//     // std::unique_ptr<ASTNode> right_operand = parse_primary();
-//     // if (!right_operand) {
-//     //     // Handle error: Invalid right operand
-//         return nullptr;
-//     // }
-
-//     // return std::make_unique<ArithmeticNode>(
-//     //     std::move(left_operand), op, std::move(right_operand));
-// }
-
-
-}// namespace fg

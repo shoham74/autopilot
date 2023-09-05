@@ -23,9 +23,9 @@ private:
     std::unique_ptr<SleepNode> parse_sleep(std::vector<Token> const& a_tokens);
     std::unique_ptr<WhileNode> parse_while(std::vector<Token> const& a_tokens);
     std::unique_ptr<BindNode> parse_bind(std::vector<Token> const& a_tokens);
-    // std::unique_ptr<IfNode> parse_if();
-    // std::unique_ptr<AssignmentNode> parse_assignment();
-    // std::unique_ptr<ArithmeticNode> parse_arithmetic();
+    std::unique_ptr<IfNode> parse_if(std::vector<Token> const& a_tokens);
+    std::unique_ptr<AssignmentNode> parse_assignment(std::vector<Token> const& a_tokens);
+    std::unique_ptr<ArithmeticNode> parse_arithmetic(std::vector<Token> const& a_tokens);
 
     //std::string get_command_from_script();
 

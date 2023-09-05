@@ -291,16 +291,16 @@ BEGIN_TEST(sleep_var)
 
 END_TEST
 
-// BEGIN_TEST(while_var)
-//     std::string sourceCode = "while rpm < 750 { var rpm = 750 }";
-//     fg::Parser parser(sourceCode);
+BEGIN_TEST(while_var)
+    std::string sourceCode = "while rpm < 750 { var rpm = 750 }";
+    fg::Parser parser(sourceCode);
     
-//     auto vec_node = parser.parse();
-//     ASSERT_EQUAL(vec_node.size(), 1);
-//     //auto name = dynamic_cast<WhileNode*>(vec_node.front().get());
-//     // ASSERT_EQUAL( name->time() , 5000);
+    auto vec_node = parser.parse();
+    ASSERT_EQUAL(vec_node.size(), 1);
+    //auto name = dynamic_cast<WhileNode*>(vec_node.front().get());
+    // ASSERT_EQUAL( name->time() , 5000);
 
-// END_TEST
+END_TEST
 
 
 TEST_SUITE(因果応報 [inga ōhō: bad causes bring bad results])
@@ -310,5 +310,6 @@ TEST_SUITE(因果応報 [inga ōhō: bad causes bring bad results])
     TEST(parse_var)
     TEST(print_var)
     TEST(sleep_var)
+    TEST(while_var)
 
 END_SUITE
