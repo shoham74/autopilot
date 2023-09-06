@@ -25,7 +25,11 @@ std::unique_ptr<ASTNode> Parser::parse_statement(std::vector<Token> const& a_tok
 {
     if (m_pos < a_tokens.size()) {
         Token current_token = a_tokens[m_pos];
-        if (current_token.m_type == TokenType::VAR) {
+        if (current_token.m_type == TokenType::VAR && a_tokens[m_pos+3].m_type == TokenType::BIND) {
+            m_pos++; 
+            return parse_bind(a_tokens);
+        }
+        else if (current_token.m_type == TokenType::VAR) {
             m_pos++; 
             return parse_variable(a_tokens);
 
@@ -162,63 +166,63 @@ std::unique_ptr<ArithmeticNode> Parser::parse_arithmetic(std::vector<Token> cons
     if (m_pos < a_tokens.size() && a_tokens[m_pos].m_type == TokenType::NUMBER) {
         Token current_token = a_tokens[m_pos];
         m_pos++;
-        
-        std::unique_ptr<ArithmeticNode> arithmetic_node = std::make_unique<ArithmeticNode>(current_token.m_value);
-
-        while (m_pos < a_tokens.size() && ((a_tokens[m_pos].m_type == TokenType::PLUS) 
-        || (a_tokens[m_pos].m_type == TokenType::MINUS) 
-        || (a_tokens[m_pos].m_type == TokenType::SLASH)
-        || (a_tokens[m_pos].m_type == TokenType::ASTERISK) )) {
-            m_pos++;
-            if (m_pos < a_tokens.size() && a_tokens[m_pos].m_type == TokenType::NUMBER) {
-                current_token = a_tokens[m_pos];
-                m_pos++;
-
-                // arithmetic_node = std::make_unique<ConditionNode>(
-                //     std::move(arithmetic_node),
-                //     std::make_unique<ArithmeticNode>(current_token.m_value)
-                // );
-            } else {
-
-                return nullptr;
-            }
-        }
-        return arithmetic_node;
     }
+    //     std::unique_ptr<ArithmeticNode> arithmetic_node = std::make_unique<ArithmeticNode>(current_token.m_value);
+
+    //     while (m_pos < a_tokens.size() && ((a_tokens[m_pos].m_type == TokenType::PLUS) 
+    //     || (a_tokens[m_pos].m_type == TokenType::MINUS) 
+    //     || (a_tokens[m_pos].m_type == TokenType::SLASH)
+    //     || (a_tokens[m_pos].m_type == TokenType::ASTERISK) )) {
+    //         m_pos++;
+    //         if (m_pos < a_tokens.size() && a_tokens[m_pos].m_type == TokenType::NUMBER) {
+    //             current_token = a_tokens[m_pos];
+    //             m_pos++;
+
+    //             // arithmetic_node = std::make_unique<ConditionNode>(
+    //             //     std::move(arithmetic_node),
+    //             //     std::make_unique<ArithmeticNode>(current_token.m_value)
+    //             // );
+    //         } else {
+
+    //             return nullptr;
+    //         }
+    //     }
+    //     return arithmetic_node;
+    // }
 
     return nullptr;
 }
 
 std::unique_ptr<BindNode> Parser::parse_bind(std::vector<Token> const& a_tokens)
 {
-    if (m_pos < a_tokens.size() && a_tokens[m_pos].m_type == TokenType::BIND) {
-        m_pos++;
-
-        if (m_pos < a_tokens.size() && a_tokens[m_pos].m_type == TokenType::OPEN_PAREN) {
-            m_pos++;
-
-            if (m_pos < a_tokens.size() && a_tokens[m_pos].m_type == TokenType::STRING_LITERAL) {
-                std::string property = a_tokens[m_pos].m_value;
+     if (m_pos < a_tokens.size()) {
+            Token current_token = a_tokens[m_pos];
+            std::unique_ptr<BindNode> bind_node ;
+            std::string bind_name;
+            std::string property;
+            if (current_token.m_type == TokenType::IDENTIFIER) {
+                bind_name = current_token.m_value;
                 m_pos++;
-
-                if (m_pos < a_tokens.size() && a_tokens[m_pos].m_type == TokenType::COMMA) {
-                    m_pos++;
-
-                    if (m_pos < a_tokens.size() && a_tokens[m_pos].m_type == TokenType::IDENTIFIER) {
-                        std::string variable = a_tokens[m_pos].m_value;
-                        m_pos++;
-
-                        if (m_pos < a_tokens.size() && a_tokens[m_pos].m_type == TokenType::CLOSE_PAREN) {
-                            m_pos++;
-
-                            return std::make_unique<BindNode>(property, variable);
-                        }
-                    }
-                }
             }
-        }
-    }
-
+            if (m_pos < a_tokens.size() && a_tokens[m_pos].m_type == TokenType::ASSIGNMENT) {
+                m_pos++; 
+            }
+            if (m_pos < a_tokens.size() && a_tokens[m_pos].m_type == TokenType::BIND) {
+                    m_pos++; 
+            }
+            if (m_pos < a_tokens.size() && a_tokens[m_pos].m_type == TokenType::OPEN_PAREN) {
+                   m_pos++;
+            }
+            if (m_pos < a_tokens.size() && a_tokens[m_pos].m_type == TokenType::STRING_LITERAL) {
+                property = a_tokens[m_pos].m_value;
+                m_pos++;
+            }
+            if (m_pos < a_tokens.size() && a_tokens[m_pos].m_type == TokenType::CLOSE_PAREN) {
+                m_pos++;
+            }
+            bind_node = std::make_unique<BindNode>(bind_name, property);
+            return bind_node;
+        }                
     return nullptr;
 }
 

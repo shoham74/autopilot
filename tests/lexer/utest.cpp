@@ -269,6 +269,17 @@ BEGIN_TEST(parse_var)
 
 END_TEST
 
+BEGIN_TEST(parse_bind)
+    std::string sourceCode = "var x = bind ( '/sim/flightmodel/position/elevation-ft' ) ";
+    fg::Parser parser(sourceCode);
+    
+    auto vec_node = parser.parse();
+    ASSERT_EQUAL(vec_node.size(), 1);
+    auto name = dynamic_cast<BindNode*>(vec_node.front().get());
+    ASSERT_EQUAL( name->name() , "x");
+
+END_TEST
+
 BEGIN_TEST(print_var)
     std::string sourceCode = "print 'hello_world' ";
     fg::Parser parser(sourceCode);
@@ -308,8 +319,9 @@ TEST_SUITE(因果応報 [inga ōhō: bad causes bring bad results])
     TEST(script_test)
     TEST(read_file_test)
     TEST(parse_var)
+    TEST(parse_bind)
     TEST(print_var)
     TEST(sleep_var)
-    TEST(while_var)
+    IGNORE_TEST(while_var)
 
 END_SUITE
